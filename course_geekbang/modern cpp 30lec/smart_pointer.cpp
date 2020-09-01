@@ -1,6 +1,6 @@
 
 #include <utility>  // std::swap
-
+//计数器类
 class shared_count {
 public:
   shared_count() noexcept
@@ -25,19 +25,23 @@ private:
 template <typename T>
 class smart_ptr {
 public:
+  //类型转换友元声明
   template <typename U>
   friend class smart_ptr;
-
+  //构造函数
   explicit smart_ptr(T* ptr = nullptr)
     : ptr_(ptr)
   {
+    //若被绑定到创建的新对象，则生成新计数器
     if (ptr) {
       shared_count_ =
         new shared_count();
     }
   }
+  //析构函数
   ~smart_ptr()
   {
+    //若本次析构操作后不再有本对象的智能指针，则销毁对象并删除计数器
     if (ptr_ &&
       !shared_count_
          ->reduce_count()) {
@@ -45,10 +49,11 @@ public:
       delete shared_count_;
     }
   }
-
+  //拷贝构造函数
   smart_ptr(const smart_ptr& other)
   {
     ptr_ = other.ptr_;
+    //若被拷贝指针非空，本智能指针和被拷贝智能指针的计数器均加1
     if (ptr_) {
       other.shared_count_
         ->add_count();
