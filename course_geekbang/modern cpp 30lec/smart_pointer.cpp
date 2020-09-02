@@ -49,7 +49,7 @@ public:
       delete shared_count_;
     }
   }
-  //拷贝构造函数
+  //拷贝构造函数，泛型版本与该非泛型版本不冲突，若未定义该普通版本，会自动生成默认版导致bug
   smart_ptr(const smart_ptr& other)
   {
     ptr_ = other.ptr_;
@@ -61,6 +61,7 @@ public:
         other.shared_count_;
     }
   }
+  //泛型拷贝构造函数
   template <typename U>
   smart_ptr(const smart_ptr<U>& other) noexcept
   {
@@ -70,6 +71,7 @@ public:
       shared_count_ = other.shared_count_;
     }
   }
+  //泛型移动构造函数
   template <typename U>
   smart_ptr(smart_ptr<U>&& other) noexcept
   {
@@ -80,6 +82,7 @@ public:
       other.ptr_ = nullptr;
     }
   }
+  //泛型类型转换构造函数
   template <typename U>
   smart_ptr(const smart_ptr<U>& other,
             T* ptr) noexcept
@@ -92,6 +95,7 @@ public:
         other.shared_count_;
     }
   }
+  //拷贝运算符
   smart_ptr&
   operator=(smart_ptr rhs) noexcept
   {
@@ -119,7 +123,7 @@ public:
     swap(shared_count_,
          rhs.shared_count_);
   }
-
+  //泛型运算符重载
   T& operator*() const noexcept
   {
     return *ptr_;
@@ -144,7 +148,7 @@ void swap(smart_ptr<T>& lhs,
 {
   lhs.swap(rhs);
 }
-
+//类型转换
 template <typename T, typename U>
 smart_ptr<T> static_pointer_cast(
   const smart_ptr<U>& other) noexcept
